@@ -1,0 +1,35 @@
+{% extends './base.html' %}
+{% load bootstrap3 %}
+
+{% block title %} Messages
+{% endblock title %}
+
+{% block header %}
+    <h2>Wiadomości {{ user }}:</h2>
+{% endblock header %}
+
+{% block content %}
+
+    <h3>Odebrane</h3>
+    <ul>
+    {% for message in to_messages %}
+        <li {% if not message.is_read %} style="font-weight: bold" {% endif %}>
+            <a href="{% url 'twitter:message' message.id %}">{{ message.message|truncatechars:30 }}</a>
+        </li>
+        {% empty %}
+        <li>Brak otrzymanych wiadomości</li>
+    {% endfor %}
+    </ul>
+
+    <h3>Wysłane</h3>
+    <ul>
+    {% for message in from_messages %}
+        <li {% if not message.is_read %} style="font-weight: bold" {% endif %}>
+            <a href="{% url 'twitter:message' message.id %}">{{ message.message|truncatechars:30 }}</a>
+        </li>
+        {% empty %}
+        <li>Brak wysłanych wiadomości</li>
+    {% endfor %}
+    </ul>
+
+{% endblock content %}

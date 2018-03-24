@@ -1,0 +1,17 @@
+{% extends './base.html' %}
+{% load bootstrap3 %}
+
+{% block title %} Edit entry
+{% endblock title %}
+
+{% block header %}
+    <h2>Edytuj wpis:</h2>
+{% endblock header %}
+
+{% block content %}
+    <form action="" method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+        <input type="submit" name="submit" value="zapisz">
+    </form>
+{% endblock content %}

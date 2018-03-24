@@ -1,0 +1,28 @@
+{% extends './base.html' %}
+{% load bootstrap3 %}
+
+{% block title %} User
+{% endblock title %}
+
+{% block header %}
+    <h2>Użytkownik: {{ show_user.nick }}
+    {% if show_user.username == user.username %}
+        <a href="{% url 'twitter:edit_user' %}">Edytuj</a>
+    {% endif %}
+    </h2>
+{% endblock header %}
+
+{% block content %}
+    <ul>
+    {% for entry in entries %}
+        <li><a href="{% url 'twitter:entry' entry.id %}">{{ entry.content }} </a></br>
+            data utworzenia: {{ entry.created_at|date:'j.n.y' }} </br>
+            liczba komentarzy: {{ entry.comments.all|length }}
+
+        </li>
+    {% endfor %}
+    </ul>
+        {% if show_user != user %}
+        <a href="{%  url 'twitter:add_message' %}">Wyślij wiadomość</a>
+        {% endif %}
+{% endblock content %}

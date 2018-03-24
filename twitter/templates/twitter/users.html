@@ -1,0 +1,17 @@
+{% extends './base.html' %}
+{% load bootstrap3 %}
+
+{% block title %} Users
+{% endblock title %}
+
+{% block header %}
+    <h2>Użytkownicy:</h2>
+{% endblock header %}
+
+{% block content %}
+    <ul>
+    {% for user in users %}
+            <li><a href="{% url 'twitter:user_details' user.id %}">{{ user.nick }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock content %}

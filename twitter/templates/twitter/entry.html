@@ -1,0 +1,33 @@
+{% extends './base.html' %}
+{% load bootstrap3 %}
+
+{% block title %} Entry
+{% endblock title %}
+
+{% block header %}
+    <h2>Wpis: {{ entry.content|truncatewords:2 }}</h2>
+{% endblock header %}
+
+{% block content %}
+    <p>{{ entry.content }}</p>
+    <p>autor: {{ entry.user.username }}</p>
+    {% if  entry.user == user %}
+        <a href="{% url 'twitter:edit_entry' entry.id %}">edit</a>
+        <a href="{% url 'twitter:delete' 'entry' entry.id %}">delete</a>
+    {% endif %}
+
+    {% if comments %}
+        <h3>Komentarze:</h3>
+        {% for comment in comments %}
+            <p>{{ comment.content }}<br>{{ comment.user }}, {{ comment.edited_at|date:'j.n.y H:i' }}</p>
+            {% empty %}
+            <p>Brak komentarzy do tego postu</p>
+        {% endfor %}
+    {% endif %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input type="submit" name="submit" value="dodaj komentarz">
+    </form>
+{% endblock content %}

@@ -1,0 +1,17 @@
+{% extends './base.html' %}
+{% load bootstrap3 %}
+
+{% block title %} Delete entry
+{% endblock title %}
+
+{% block header %}
+    <h2>Czy na pewno chcesz usunąć?</h2>
+{% endblock header %}
+
+{% block content %}
+    <form action="" method="post">
+    {% csrf_token %}
+        <input type="submit" name="submit" value="nie" class="btn btn-default">
+        <input type="submit" name="submit" value="tak" class="btn btn-danger">
+    </form>
+{% endblock content %}

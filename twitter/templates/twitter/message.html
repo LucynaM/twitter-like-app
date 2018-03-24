@@ -1,0 +1,25 @@
+{% extends './base.html' %}
+{% load bootstrap3 %}
+
+{% block title %} Message
+{% endblock title %}
+
+{% block header %}
+    <h2>Wiadomość:</h2>
+{% endblock header %}
+
+{% block content %}
+    <p> Od: {{ message.from_user.username }} </br>
+        Do: {{ message.to_user.username }} </p>
+    <p> Treść: {{ message.message }} </p>
+    <p>Data wysłania: {{ message.created_at|date:'j.n.y H:i' }}</p>
+    {% if message.from_user != user %}
+    <h3>Odpowiedź:</h3>
+    <form action="" method="post">
+    {% csrf_token %}
+        {% bootstrap_form form %}
+        <input type="submit" name="submit" value="wyślij">
+    </form>
+    {% endif %}
+
+{% endblock content %}

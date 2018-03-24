@@ -1,0 +1,29 @@
+{% extends './base.html' %}
+{% load bootstrap3 %}
+
+{% block title %} Entries
+{% endblock title %}
+
+{% block header %}
+    <h2>Wpisy:</h2>
+{% endblock header %}
+
+{% block content %}
+    <table class="table">
+        <tr>
+            <th>Wpis</th>
+            <th>Użytkownik</th>
+            <th>Dodano</th>
+            <th>Zmodyfikowano</th>
+        </tr>
+    {% for entry in entries %}
+        <tr>
+            <td><a href="{% url 'twitter:entry' entry.id %}">{{ entry.content|truncatewords:2 }}</a></td>
+            <td>{{ entry.user.nick }}</td>
+            <td>{{ entry.created_at|date:'j.n.y H:i' }}</td>
+            <td>{{ entry.edited_at|date:'j.n.y H:i' }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    <a href="{% url 'twitter:add_entry' %}">Dodaj wpis</a>
+{% endblock content %}
