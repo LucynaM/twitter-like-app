@@ -97,7 +97,10 @@ ENV/
 # mkdocs documentation
 /site
 
+
 # mypy
 .mypy_cache/
+.idea/
 
-.idea
+# secret_key
+secret_key.py
