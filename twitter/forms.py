@@ -6,7 +6,7 @@ from .models import Tweet, MyUser, Comments, Messages
 class EntryForm(forms.ModelForm):
     class Meta:
         model = Tweet
-        exclude = ['user']
+        exclude = ['user', 'banned']
 
 class LoginForm(forms.Form):
     email = forms.EmailField()
