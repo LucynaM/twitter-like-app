@@ -1,0 +1,48 @@
+body {
+    font-family: 'PT Sans', sans-serif;
+}
+.page-header {
+    border-bottom-width: 0;
+}
+.just-link {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin: 30px 20px 40px 0;
+    display: inline-block;
+}
+.just-link.delete {
+    color: #CC0000;
+}
+
+.table {
+    background-color: #E8EFF4;
+}
+.table > tbody > tr > th,
+.table > tbody > tr > td {
+    border-top-color: #fff;
+}
+
+.comments {
+    background-color: #E8EFF4;;
+    padding: 10px;
+    margin-top: 40px;
+}
+.comments > p {
+    border-top: 1px solid #fff;
+    line-height: 25px;
+    padding: 10px 0;
+}
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+ul > li {
+    padding: 7px 0;
+}
+.users-list > li {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+
+}
