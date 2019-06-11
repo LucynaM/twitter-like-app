@@ -12,15 +12,103 @@ def check_author(obj, request):
     if obj.user != request.user:
         raise Http404
 
+class SignUpUser(View):
+    """Sign up new user"""
+    def get(self, request):
+        form = SigninForm()
+        ctx = {
+            'form': form,
+        }
+        return render(request, 'twitter/signup.html', ctx)
+
+    def post(self, request):
+        form = SigninForm(request.POST)
+        if form.is_valid():
+            form.cleaned_data.pop('password2')
+            user = MyUser.objects.create_user(username=form.cleaned_data['email'], **form.cleaned_data)
+            login(request, user)
+            return redirect('twitter:entries')
+        ctx = {
+            'form': form,
+        }
+        return render(request, 'twitter/signup.html', ctx)
+
+
+class LoginUser(View):
+    """Log in user"""
+    def get(self, request):
+        form = LoginForm()
+        ctx = {
+            'form': form
+        }
+        return render(request, 'twitter/login.html', ctx)
+
+    def post(self, request):
+        form = LoginForm(request.POST)
+        msg = ""
+        if form.is_valid():
+            user = authenticate(email=form.cleaned_data['email'], password=form.cleaned_data['password'])
+            if user is not None:
+                login(request, user)
+                if request.GET.get('next'):
+                    return redirect(request.GET.get('next'))
+                else:
+                    return redirect('twitter:entries')
+            else:
+                msg = "błędny użytkownik lub hasło"
+
+        ctx = {
+            'form': form,
+            'msg': msg,
+        }
+        return render(request, 'homework/login.html', ctx)
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('twitter:login')
+
 
 class EntriesView(LoginRequiredMixin, View):
     """Display all entries"""
     def get(self, request):
-        entries = Tweet.objects.exclude(banned=True).order_by('edited_at')
+        entries = Tweet.objects.exclude(banned=True).order_by('-edited_at')
         ctx = {
             'entries': entries,
         }
         return render(request, 'twitter/entries.html', ctx)
+
+
+class EntryView(LoginRequiredMixin, View):
+    """Display single entry"""
+    def get(self, request, id):
+        entry = Tweet.objects.get(pk=id)
+        comments = entry.comments.exclude(banned=True).order_by('-edited_at')
+        form = CommentsForm()
+        ctx = {
+            'entry': entry,
+            'comments': comments,
+            'form': form,
+        }
+        return render(request, 'twitter/entry.html', ctx)
+
+    def post(self, request, id):
+        entry = Tweet.objects.get(pk=id)
+        form = CommentsForm(request.POST)
+        user = MyUser.objects.get(username=request.user)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = user
+            comment.tweet = entry
+            comment.save()
+            form = CommentsForm()
+        comments = entry.comments.exclude(banned=True).order_by('-edited_at')
+        ctx = {
+            'form': form,
+            'comments': comments,
+            'entry': entry,
+        }
+        return render(request, 'twitter/entry.html', ctx)
 
 
 class AddEntry(LoginRequiredMixin, View):
@@ -66,63 +154,6 @@ class EditEntry(LoginRequiredMixin, View):
             'form': form,
         }
         return render(request, 'twitter/edit_entry.html', ctx)
-
-
-class LoginUser(View):
-    """Log in user"""
-    def get(self, request):
-        form = LoginForm()
-        ctx = {
-            'form': form
-        }
-        return render(request, 'twitter/login.html', ctx)
-
-    def post(self, request):
-        form = LoginForm(request.POST)
-        msg = ""
-        if form.is_valid():
-            user = authenticate(email=form.cleaned_data['email'], password=form.cleaned_data['password'])
-            if user is not None:
-                login(request, user)
-                if request.GET.get('next'):
-                    return redirect(request.GET.get('next'))
-                else:
-                    return redirect('twitter:entries')
-            else:
-                msg = "błędny użytkownik lub hasło"
-
-        ctx = {
-            'form': form,
-            'msg': msg,
-        }
-        return render(request, 'homework/login.html', ctx)
-
-
-class SignUpUser(View):
-    """Sign up new user"""
-    def get(self, request):
-        form = SigninForm()
-        ctx = {
-            'form': form,
-        }
-        return render(request, 'twitter/signup.html', ctx)
-
-    def post(self, request):
-        form = SigninForm(request.POST)
-        if form.is_valid():
-            form.cleaned_data.pop('password2')
-            user = MyUser.objects.create_user(username=form.cleaned_data['email'], **form.cleaned_data)
-            login(request, user)
-            return redirect('twitter:entries')
-        ctx = {
-            'form': form,
-        }
-        return render(request, 'twitter/signup.html', ctx)
-
-
-def logout_user(request):
-    logout(request)
-    return redirect('twitter:login')
 
 
 class UsersView(LoginRequiredMixin, View):
@@ -175,38 +206,6 @@ class EditUser(LoginRequiredMixin, View):
         return render(request, 'twitter/edit_user.html', ctx)
 
 
-class EntryView(LoginRequiredMixin, View):
-    """Display single entry"""
-    def get(self, request, id):
-        entry = Tweet.objects.get(pk=id)
-        comments = entry.comments.exclude(banned=True)
-        form = CommentsForm()
-        ctx = {
-            'entry': entry,
-            'comments': comments,
-            'form': form,
-        }
-        return render(request, 'twitter/entry.html', ctx)
-
-    def post(self, request, id):
-        entry = Tweet.objects.get(pk=id)
-        form = CommentsForm(request.POST)
-        user = MyUser.objects.get(username=request.user)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.user = user
-            comment.tweet = entry
-            comment.save()
-            form = CommentsForm()
-        comments = entry.comments.all()
-        ctx = {
-            'form': form,
-            'comments': comments,
-            'entry': entry,
-        }
-        return render(request, 'twitter/entry.html', ctx)
-
-
 class MessagesView(LoginRequiredMixin, View):
     """Display user messages"""
 
@@ -219,29 +218,6 @@ class MessagesView(LoginRequiredMixin, View):
             'to_messages': to_messages,
         }
         return render(request, 'twitter/messages.html', ctx)
-
-
-class AddMessage(LoginRequiredMixin, View):
-    """Add new message"""
-
-    def get(self, request):
-        form = MessagesForm()
-        form.fields['to_user'] = forms.ModelChoiceField(queryset=MyUser.objects.exclude(username=request.user), label='Do')
-        ctx = {
-            'form': form,
-        }
-        return render(request, 'twitter/add_message.html', ctx)
-
-    def post(self, request):
-        from_user = MyUser.objects.get(username=request.user)
-        form = MessagesForm(request.POST)
-        if form.is_valid():
-            message = Messages.objects.create(from_user=from_user, **form.cleaned_data)
-            return redirect('twitter:messages')
-        ctx = {
-            'form': form,
-        }
-        return render(request, 'twitter/add_message.html', ctx)
 
 
 class MessageView(LoginRequiredMixin, View):
@@ -272,6 +248,51 @@ class MessageView(LoginRequiredMixin, View):
             'form': form,
         }
         return render(request, 'twitter/message.html', ctx)
+
+
+class AddMessage(LoginRequiredMixin, View):
+    """Add new message"""
+
+    def get(self, request):
+        form = MessagesForm()
+        form.fields['to_user'] = forms.ModelChoiceField(queryset=MyUser.objects.exclude(username=request.user), label='Do')
+        ctx = {
+            'form': form,
+        }
+        return render(request, 'twitter/add_message.html', ctx)
+
+    def post(self, request):
+        from_user = MyUser.objects.get(username=request.user)
+        form = MessagesForm(request.POST)
+        if form.is_valid():
+            Messages.objects.create(from_user=from_user, **form.cleaned_data)
+            return redirect('twitter:messages')
+        ctx = {
+            'form': form,
+        }
+        return render(request, 'twitter/add_message.html', ctx)
+
+class AddMessageToUser(LoginRequiredMixin, View):
+    """Add new message"""
+
+    def get(self, request, pk):
+        form = MessagesForm()
+        ctx = {
+            'form': form,
+        }
+        return render(request, 'twitter/add_message.html', ctx)
+
+    def post(self, request, pk):
+        from_user = MyUser.objects.get(username=request.user)
+        to_user = MyUser.objects.get(pk=pk)
+        form = MessagesForm(request.POST)
+        if form.is_valid():
+            Messages.objects.create(from_user=from_user, to_user=to_user, **form.cleaned_data)
+            return redirect('twitter:messages')
+        ctx = {
+            'form': form,
+        }
+        return render(request, 'twitter/add_message.html', ctx)
 
 
 class DeleteView(LoginRequiredMixin, View):
