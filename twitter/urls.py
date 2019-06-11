@@ -1,5 +1,7 @@
 
 from django.conf.urls import url, include
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from .views import EntriesView, AddEntry, LoginUser, SignUpUser, logout_user, UserView, EditUser, UsersView, EntryView, \
     MessagesView, AddMessage, MessageView, EditEntry, DeleteView
@@ -19,4 +21,4 @@ urlpatterns = [
     url(r'^add_message/$', AddMessage.as_view(), name="add_message"),
     url(r'^message/(?P<id>(\d)+)/$', MessageView.as_view(), name="message"),
     url(r'^delete/(?P<obj>([a-zA-z0-9\-])+)/(?P<id>(\d)+)/$', DeleteView.as_view(), name="delete"),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
