@@ -4,30 +4,40 @@
 {% block title %} Entry
 {% endblock title %}
 
-{% block header %}
-    <h2>Wpis: {{ entry.content|truncatewords:2 }}</h2>
-{% endblock header %}
+{% block offset1 %}col-lg-12{% endblock offset1 %}
+{% block header %}{% endblock header %}
 
+
+{% block offset2 %}col-lg-12{% endblock offset2 %}
 {% block content %}
-    <p>{{ entry.content }}</p>
-    <p>autor: {{ entry.user.username }}</p>
-    {% if  entry.user == user %}
-        <a href="{% url 'twitter:edit_entry' entry.id %}">edit</a>
-        <a href="{% url 'twitter:delete' 'entry' entry.id %}">delete</a>
-    {% endif %}
+    <div class="row">
+        <div class='col-xs-12 col-md-6'>
+            <p>{{ entry.content }}</p>
+            <p>autor: {{ entry.user.username }}</p>
+            {% if  entry.user == user %}
+                <a class="just-link" href="{% url 'twitter:edit_entry' entry.id %}">edytuj wpis >></a>
+                <a class="just-link delete" href="{% url 'twitter:delete' 'entry' entry.id %}">usuń wpis >></a>
+            {% endif %}
+        </div>
 
-    {% if comments %}
-        <h3>Komentarze:</h3>
-        {% for comment in comments %}
-            <p>{{ comment.content }}<br>{{ comment.user }}, {{ comment.edited_at|date:'j.n.y H:i' }}</p>
-            {% empty %}
-            <p>Brak komentarzy do tego postu</p>
-        {% endfor %}
-    {% endif %}
+        <div class='col-xs-12 col-md-6'>
+             <form action="" method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <input class="btn btn-primary" type="submit" name="submit" value="dodaj komentarz">
+            </form>
+            {% if comments %}
+                <section class="comments">
+                <h3>Komentarze:</h3>
+                {% for comment in comments %}
+                    <p>{{ comment.content }}<br>{{ comment.user }}, {{ comment.edited_at|date:'j.n.y H:i' }}</p>
+                    {% empty %}
+                    <p>Brak komentarzy do tego wpisu</p>
+                {% endfor %}
+                </section>
+            {% endif %}
 
-    <form action="" method="post">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        <input type="submit" name="submit" value="dodaj komentarz">
-    </form>
+
+        </div>
+    </div>
 {% endblock content %}

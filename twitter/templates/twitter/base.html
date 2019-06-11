@@ -1,3 +1,4 @@
+{% load static %}
 {% load bootstrap3 %}
 
 <!DOCTYPE html>
@@ -8,6 +9,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% bootstrap_css %}
         {% bootstrap_javascript %}
+
+        <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap&subset=latin-ext" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'twitter/css/style.css' %}">
+
     </head>
     <body>
         <nav class="navbar navbar-default navbar-static-top">
@@ -42,14 +47,14 @@
         </nav>
         <div class="container">
             <div class="row">
-                <div class='col-xs-12 col-sm-6 col-sm-offset-3'>
+                <div class='{% block offset1 %} col-xs-12 col-md-8 col-md-offset-2 {% endblock offset1 %}'>
                     <div class="page-header">
                     {% block header %}{% endblock header %}
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class='col-xs-12 col-sm-6 col-sm-offset-3'>
+                <div class='{% block offset2 %} col-xs-12 col-md-8 col-md-offset-2 {% endblock offset2 %}'>
                     {% block content %}{% endblock content %}
                 </div>
             </div>

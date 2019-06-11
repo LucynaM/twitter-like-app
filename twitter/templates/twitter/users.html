@@ -9,7 +9,7 @@
 {% endblock header %}
 
 {% block content %}
-    <ul>
+    <ul class="users-list">
     {% for user in users %}
             <li><a href="{% url 'twitter:user_details' user.id %}">{{ user.nick }}</a></li>
     {% endfor %}

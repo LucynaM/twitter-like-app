@@ -5,24 +5,26 @@
 {% endblock title %}
 
 {% block header %}
-    <h2>Użytkownik: {{ show_user.nick }}
+    <h2>Użytkownik: {{ show_user.nick }}</h2>
     {% if show_user.username == user.username %}
-        <a href="{% url 'twitter:edit_user' %}">Edytuj</a>
+        <a class="just-link" href="{% url 'twitter:edit_user' %}">Edytuj Twoje dane >></a>
     {% endif %}
-    </h2>
 {% endblock header %}
 
 {% block content %}
-    <ul>
+    <h3>Twoje wpisy</h3>
+    <ul class="entries-list">
     {% for entry in entries %}
         <li><a href="{% url 'twitter:entry' entry.id %}">{{ entry.content }} </a></br>
             data utworzenia: {{ entry.created_at|date:'j.n.y' }} </br>
             liczba komentarzy: {{ entry.comments.all|length }}
-
         </li>
+        {% empty %}
+        <li>Brak wpisów</li>
     {% endfor %}
     </ul>
-        {% if show_user != user %}
-        <a href="{%  url 'twitter:add_message' %}">Wyślij wiadomość</a>
-        {% endif %}
+
+    {% if show_user != user %}
+        <a class="just-link" href="{%  url 'twitter:add_message_to_user' show_user.pk %}">Wyślij wiadomość do użytkownika >></a>
+    {% endif %}
 {% endblock content %}

@@ -5,13 +5,13 @@
 {% endblock title %}
 
 {% block header %}
-    <h2>Wiadomości {{ user }}:</h2>
+    <h2>Twoje wiadomości:</h2>
 {% endblock header %}
 
 {% block content %}
 
     <h3>Odebrane</h3>
-    <ul>
+    <ul class="messages-list messages-sent">
     {% for message in to_messages %}
         <li {% if not message.is_read %} style="font-weight: bold" {% endif %}>
             <a href="{% url 'twitter:message' message.id %}">{{ message.message|truncatechars:30 }}</a>
@@ -22,7 +22,7 @@
     </ul>
 
     <h3>Wysłane</h3>
-    <ul>
+    <ul class="messages-list messages-received">
     {% for message in from_messages %}
         <li {% if not message.is_read %} style="font-weight: bold" {% endif %}>
             <a href="{% url 'twitter:message' message.id %}">{{ message.message|truncatechars:30 }}</a>
@@ -31,5 +31,8 @@
         <li>Brak wysłanych wiadomości</li>
     {% endfor %}
     </ul>
+
+    <a class="just-link" href="{% url 'twitter:add_message' %}">Wyślij wiadomość >></a>
+
 
 {% endblock content %}
