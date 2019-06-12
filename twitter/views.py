@@ -49,6 +49,7 @@ class LoginUser(View):
         if form.is_valid():
             user = authenticate(email=form.cleaned_data['email'], password=form.cleaned_data['password'])
             if user is not None:
+                print('jestem w user is not None')
                 login(request, user)
                 if request.GET.get('next'):
                     return redirect(request.GET.get('next'))
@@ -61,7 +62,7 @@ class LoginUser(View):
             'form': form,
             'msg': msg,
         }
-        return render(request, 'homework/login.html', ctx)
+        return render(request, 'twitter/login.html', ctx)
 
 
 def logout_user(request):
