@@ -27,7 +27,7 @@ class MyUser(AbstractUser):
 
 
 class Tweet(ModelBasicInfo):
-    content = models.TextField(max_length=140)
+    content = models.TextField(max_length=400)
     user = models.ForeignKey(MyUser, related_name='entries', on_delete=models.CASCADE)
 
     def __str__(self):
