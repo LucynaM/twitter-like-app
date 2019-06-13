@@ -28,17 +28,23 @@
 
             <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
+                {% if user.is_authenticated %}
                 <li><a href="{% url 'twitter:entries' %}">Wpisy</a></li>
                 <li><a href="{% url 'twitter:users' %}">Użytkownicy</a></li>
                 <li><a href="{% url 'twitter:messages' %}">Wiadomości</a></li>
+                {% endif %}
               </ul>
               <ul class="nav navbar-nav navbar-right">
                   {% if user.is_authenticated %}
                 <li><a href="">Witaj {{ user }}</a></li>
                 <li><a href="{% url 'twitter:logout' %}">Wyloguj</a></li>
                   {% else %}
+                  {% if request.path == '/sign_up/' %}
                 <li><a href="{% url 'twitter:login' %}">Zaloguj</a></li>
+                  {% endif %}
+                  {% if request.path == '/login/' %}
                 <li><a href="{% url 'twitter:sign_up' %}">Zarejestruj</a></li>
+                  {% endif %}
                   {% endif %}
               </ul>
 
