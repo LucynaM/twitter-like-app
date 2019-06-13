@@ -35,7 +35,7 @@ class Tweet(ModelBasicInfo):
 
 
 class Comments(ModelBasicInfo):
-    content = models.CharField(max_length=60, verbose_name='treść')
+    content = models.CharField(max_length=255, verbose_name='treść')
     user = models.ForeignKey(MyUser, related_name='comments', verbose_name='użytkownik')
     tweet = models.ForeignKey(Tweet, related_name='comments', on_delete=models.CASCADE)
 
