@@ -49,7 +49,6 @@ class LoginUser(View):
         if form.is_valid():
             user = authenticate(email=form.cleaned_data['email'], password=form.cleaned_data['password'])
             if user is not None:
-                print('jestem w user is not None')
                 login(request, user)
                 if request.GET.get('next'):
                     return redirect(request.GET.get('next'))
@@ -96,7 +95,7 @@ class EntryView(LoginRequiredMixin, View):
     def post(self, request, id):
         entry = Tweet.objects.get(pk=id)
         form = CommentsForm(request.POST)
-        user = MyUser.objects.get(username=request.user)
+        user = request.user
         if form.is_valid():
             comment = form.save(commit=False)
             comment.user = user
@@ -182,7 +181,8 @@ class UserView(LoginRequiredMixin, View):
 
 class EditUser(LoginRequiredMixin, View):
     def get(self, request):
-        user = MyUser.objects.get(username=request.user)
+        user = request.user
+        #user = MyUser.objects.get(username=request.user)
         form = SigninForm(instance=user)
         ctx = {
             'form': form,
@@ -190,7 +190,7 @@ class EditUser(LoginRequiredMixin, View):
         return render(request, 'twitter/edit_user.html', ctx)
 
     def post(self, request):
-        user = MyUser.objects.get(username=request.user)
+        user = request.user
         form = SigninForm(request.POST, instance=user)
         if form.is_valid():
             user.username = form.cleaned_data['email']
@@ -211,7 +211,7 @@ class MessagesView(LoginRequiredMixin, View):
     """Display user messages"""
 
     def get(self, request):
-        user = MyUser.objects.get(username=request.user)
+        user = request.user
         from_messages = user.from_messages.exclude(banned=True).order_by('-created_at')
         to_messages = user.to_messages.exclude(banned=True).order_by('-created_at')
         ctx = {
@@ -239,7 +239,7 @@ class MessageView(LoginRequiredMixin, View):
     def post(self, request, id):
         message = Messages.objects.get(pk=id)
         to_user = message.from_user
-        from_user = MyUser.objects.get(username=request.user)
+        from_user = request.user
         form = MessagesForm(request.POST)
         if form.is_valid():
             Messages.objects.create(from_user=from_user, to_user=to_user, **form.cleaned_data)
@@ -256,17 +256,18 @@ class AddMessage(LoginRequiredMixin, View):
 
     def get(self, request):
         form = MessagesForm()
-        form.fields['to_user'] = forms.ModelChoiceField(queryset=MyUser.objects.exclude(username=request.user), label='Do')
+        form.fields['to_user'] = forms.ModelChoiceField(queryset=MyUser.objects.exclude(pk=request.user.pk), label='Do')
         ctx = {
             'form': form,
         }
         return render(request, 'twitter/add_message.html', ctx)
 
     def post(self, request):
-        from_user = MyUser.objects.get(username=request.user)
+        from_user = request.user
+        to_user = MyUser.objects.get(pk=request.POST['to_user'])
         form = MessagesForm(request.POST)
         if form.is_valid():
-            Messages.objects.create(from_user=from_user, **form.cleaned_data)
+            Messages.objects.create(from_user=from_user, to_user=to_user, **form.cleaned_data)
             return redirect('twitter:messages')
         ctx = {
             'form': form,
@@ -284,7 +285,7 @@ class AddMessageToUser(LoginRequiredMixin, View):
         return render(request, 'twitter/add_message.html', ctx)
 
     def post(self, request, pk):
-        from_user = MyUser.objects.get(username=request.user)
+        from_user = request.user
         to_user = MyUser.objects.get(pk=pk)
         form = MessagesForm(request.POST)
         if form.is_valid():
